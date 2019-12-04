@@ -97,17 +97,33 @@ Meanwhile, we also can see which information give the most impact to the predict
 ![OrangeRank](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/orange_rank_top_five.png)<br>
 
 ### Model Train and Test
-Here we work with two models, which is Random Forest (RF) and Support Vector Machine (SVM).<br>
-Random Forest itself builds upon the idea of bagging which reduces overfiting. This model have two parameters which are, the number of trees and the number of features. The error will depends on correlation between trees and strength of each single tree. This method is also easy to parallelize, that makes it good for use.<br>
-![RFEvaluationResult]()<br>
-Support Vector Machine can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVM comes with long training time for large dataset.<br>
-![SVMEvaluationResult]()<br>
+Here we work with two models, which is Random Forest (RF) and Support Vector Regression (SVR).<br>
+Random Forest itself builds upon the idea of bagging which reduces overfiting. This model have two parameters which are, the number of trees and the number of features. The error will depends on correlation between trees and strength of each single tree. This method is also easy to parallelize, that makes it good for use. Here using the rf_evaluation.py for the evaluation we get the result as below.<br>
+
+|Evaluation        |Value                     |
+|------------------|--------------------------|
+|MAE               |28.2                      |
+|MSE               |1430.1012903022558        |
+|RMSE              |37.81668005394254         |
+|R<sup>2</sup>     |-0.6820501555223537       |
+
+Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below.<br>
+
+|Evaluation        |Value                     |
+|------------------|--------------------------|
+|MAE               |24.55                     |
+|MSE               |845.3880810817358         |
+|RMSE              |29.307555813878275        |
 
 ### Dash Development
-At the same time with Model Train and Test, we also would like to display our result not just in the terminal so we develop the front-end with Python Dash.<br>
+At the same time with Model Train and Test, we also would like to display our result not just in the terminal so we develop the front-end with Python Dash. This development also uses bootstrap. <br>
+![DashScreenshot](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/home_page.png)<br>
 
 ### Integration and Prediction
 We compile both the model that produce the result with dash that will display the program to the user. We then can see that the program work by testing it directly on  Dash. If there is nothing wrong with the program, then it is ready to go. Have fun!<br>
+Some bit of explanation that the user can give input according to the boundaries given at the upper page, some of them is like number of continents which is 6 (Asia, North America, South America, Europe, Africa, and Australia) and etc. This comes also with an error handling if it is more than or less than the required number.<br>
+![FinalResult](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/final_demo.gif)<br>
+
 
 ## References and Acknowledgements
 - ProgrammingKnowledge. https://youtu.be/dX2-V2BocqQ (Install Python)
