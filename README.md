@@ -117,7 +117,7 @@ Support Vector Regression can both be applied to solve problems in classificatio
 
 ### Dash Development
 At the same time with Model Train and Test, we also would like to display our result not just in the terminal so we develop the front-end with Python Dash. This development also uses bootstrap. <br>
-![DashScreenshot](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/home_page.png)<br>
+![DashScreenshot](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/home_page.PNG)<br>
 
 ### Integration and Prediction
 We compile both the model that produce the result with dash that will display the program to the user. We then can see that the program work by testing it directly on  Dash. If there is nothing wrong with the program, then it is ready to go. Have fun!<br>
