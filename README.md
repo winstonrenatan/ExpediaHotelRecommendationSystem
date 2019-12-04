@@ -163,7 +163,35 @@ features= features.drop('hotel_cluster', axis = 1)
 # Convert to numpy array
 features = np.array(features)
 ```
+We proceed to the next step by spiliting the data to train and test. Where in the training sets consists of 75% of the total data and 25% as the test set. random_state is just being used to initialize the random function on the train_test_split process.<br>
+```Python
+# Split the data into training and testing sets
+train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
+```
+After doing the split, we can now train the data and predict the test sets. The codes shown below that we initiate the Random Forest with one decision tree (n_estimators), when the n_estimators increase it will get us to a more detailed number in decimals. Thus, we choose it as 1 rather than the others.<br>
+```Python
+# Instantiate model with 1 decision trees
+rf = RandomForestRegressor(n_estimators = 1, random_state = 42)
+# Train the model on training data  
+rf.fit(train_features, train_labels)
 
+# Use the forest's predict method on the test data
+predictions = rf.predict(test_features)
+```
+After doing the train and prediction, now it is the time to evaluate how our model works. What we want to see is its MAE, MSE, RMSE, and R<sup>2</sup>. <br>
+```Python
+# Calculate the absolute errors
+errors = abs(predictions - test_labels)
+
+# Print out the mean absolute error (MAE)
+print('MAE:', round(np.mean(errors), 2))
+# Print out the mean squared error (MSE)
+print('MSE: ', metrics.mean_squared_error(test_labels, predictions))
+# Print out the root mean squared error (RMSE)
+print('RMSE: ', np.sqrt(metrics.mean_squared_error(test_labels, predictions)))
+# Print out the coefficient of determination (R^2)
+print('R*R:', rf.score(test_features, test_labels))
+```
 
 For the evaluation we get the result as below. <br>
 
@@ -174,7 +202,7 @@ For the evaluation we get the result as below. <br>
 |RMSE              |37.81668005394254         |
 |R<sup>2</sup>     |-0.6820501555223537       |
 
-Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below. For this model we only use 1% of the cleaned data, because for some tries on our machines it took a long time to run the data in bigger percentage. There are some things that we need to import as mentioned below. <br>
+Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below. For this model we only use 1% of the cleaned data, because for some tries on our machines it took a long time to run the data in bigger percentage. With almost the same exact steps as before, there are some things that we need to import as mentioned below. <br>
 ```Python
 # Import pandas
 import pandas as pd
@@ -225,7 +253,7 @@ Last thing we would like to know is its evaluation, with calculating the errors 
 errors = abs(pred - test_labels)
 
 # Print out the mean absolute error (MAE)
-print('Mean Absolute Error:', round(np.mean(errors), 2))
+print('MAE:', round(np.mean(errors), 2))
 # Print out the mean squared error (MSE)
 print('MSE: ', metrics.mean_squared_error(test_labels, pred))
 # Print out the root mean squared error (RMSE)
@@ -240,12 +268,90 @@ For the evaluation we get the result as below. <br>
 |RMSE              |29.307555813878275        |
 
 ### Dash Development
-At the same time with Model Train and Test, we also would like to display our result not just in the terminal so we develop the front-end with Python Dash. This development also uses bootstrap. <br>
+At the same time with Model Train and Test, we also would like to display our result not just in the terminal so we develop the front-end with Python Dash. This development also uses bootstrap. The thing that we should import are mentioned as below. <br>
+```Python
+# Import dash
+import dash
+import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output, State
+```
+Here we try to create the homepage that contains of containers which will be filled with the things we wanted. Inside the containers there will be columns that we may fill, for example below is the column for User Country Location. The code tells that it will be given a label of "Country Location" and we can get the value by using the id "user_location_country". While the type means that the input should be a number, with minimum 1 as the country number, and maximum 195 (because there are only 195 countries in the world).<br>
+```Python
+# Country location
+dbc.Col([
+    dbc.FormGroup([
+        dbc.Label("Country Location"),
+        dbc.Input(id="user_location_country", placeholder="Input here ..",
+                    type="number", min=1, max=195)
+    ])
+], md=4)
+```
+After creating several columns, we also would like to submit what the user have typed in the space given. The code for button is given below. <br>
+```Python
+dbc.Button("Submit", color="primary", block=True, id="submit-button", className="ml-auto", n_clicks=0),
+```
+Here is the final result of using the dash and bootstrap for the homepage. <br>
 ![DashScreenshot](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/home_page.PNG)<br>
 
 ### Integration and Prediction
-We compile both the model that produce the result with dash that will display the program to the user. We then can see that the program work by testing it directly on  Dash. If there is nothing wrong with the program, then it is ready to go. Have fun!<br>
-Some bit of explanation that the user can give input according to the boundaries given at the upper page, some of them is like number of continents which is 6 (Asia, North America, South America, Europe, Africa, and Australia) and etc. This comes also with an error handling if it is more than or less than the required number.<br>
+As we don't have enough time to explore, we are unable to implement pickle to make the process faster when we process the main_dash.py. main_dash.py is the main program that contains Dash (display), Random Forest Model, and Support Vector Regression (SVR) model. This take us quite a long time to run the app as it contain the models in it. The implementation is quite the same as the one on evaluation with some added things, such as adding cluster_hotel.<br>
+```Python
+# Refering to a table that describe which hotel_cluster have which facilities
+cluster_hotel = pd.read_csv ('D:/TIF/TIF SEM.7/Frontier Technology/Hotel Recommendations/GitHub Documentation/csv_data/hotel_cluster_csv.csv', sep=',')
+```
+On the code above, we place a csv file to be read and that contains facilities that a cluster have. Those facilities will also be printed in the end of the project after the prediction using both Random Forest and Support Vector Regression.<br>
+The code below implies to a function that will be used to call the cluster_hotel and the facility of the hotel cluster prediction result. This code is quite simple as it only calls and determine whether a cluster have a specific facility, then return it to a variable to be printed out later on.<br>
+```Python
+# To determine whether the hotel have certain facility or not
+def YesNo(number):
+    # Hotel have the facility
+    if(number==1):
+        return "YES"
+    # Hotel do not have the facility
+    else:
+        return "NO"
+
+# Give out hotel information according to the cluster
+def hotel_info (hotel_clus):
+    # Print information of the hotel according to its cluster
+    hotel_star="HOTEL STAR: {}. \n".format(cluster_hotel.iloc[hotel_clus-1, 1])
+    hotel_wifi="WIFI: {}. \n".format(YesNo(cluster_hotel.iloc[hotel_clus-1, 2]))
+    hotel_pool="POOL ACCESS: {}. \n".format(YesNo(cluster_hotel.iloc[hotel_clus-1, 3]))
+    hotel_restaurant="RESTAURANT:  {}. \n".format(YesNo(cluster_hotel.iloc[hotel_clus-1, 4]))
+    hotel_bar="BAR AND ALCOHOL: {}. \n".format(YesNo(cluster_hotel.iloc[hotel_clus-1, 5]))
+    hotel_aircon="AIR CONDITIONER: {}. \n".format(YesNo(cluster_hotel.iloc[hotel_clus-1, 6]))
+    final_info = hotel_star + hotel_wifi + hotel_pool + hotel_restaurant + hotel_bar + hotel_aircon
+    return final_info
+```
+After some of dash code, we will find the predict hotel cluster function at the bottom which can be used to print out the final output from our prediction that includes the information of facilities. prediction1 holds the result of Random Forest prediction and hotelRFinfo will calls the function above to determine the facilities. outputRF will give us the result of prediction with the facilites. The same also implies to prediction2 which is SVR. <br>
+```Python
+# To get the input and prints out the final output
+def predictHC(*args):
+    values = list(args)
+    values.pop(0)
+    
+    # Prediction using Random Forest
+    prediction1 = rfTrain.predict([values])
+    prediction1 = int(prediction1)
+    outputRF = "Predicted in Random Forest Model is {}. \n".format(prediction1)
+    hotelRFinfo = hotel_info(prediction1)
+    outputRF = outputRF + hotelRFinfo
+    
+    # Prediction using Support Vector Machine
+    prediction2 = svm.predict([values])
+    prediction2 = int(prediction2)
+    outputSVM = "Predicted in Support Vector Regression is {}. \n".format(prediction2)
+    hotelSVMinfo = hotel_info(prediction2)
+    outputSVM = outputSVM + hotelSVMinfo
+
+    # Final output string
+    outputFinal = outputRF + "\n" + outputSVM
+    return outputFinal
+```
+
+We compile both the model that produce the result with dash that will display the program to the user. We then can see that the program work by testing it directly on  Dash. Some bit of explanation that the user can give input according to the boundaries given at the upper page, some of them is like number of continents which is 6 (Asia, North America, South America, Europe, Africa, and Australia) and etc. This comes also with an error handling if it is more than or less than the required number. If there is nothing wrong with the program, then it is ready to go. Have fun!<br>
 ![FinalResult](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/final_demo.gif)<br>
 
 
