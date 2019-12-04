@@ -21,7 +21,7 @@ Or we can just simply download the whole thing in [Anaconda](https://www.anacond
 Don't forget to also to install [Dash](https://dash.plot.ly/installation) for the display.<br>
 
 ## Understanding the Data
-### test.csv
+### train and test.csv
 The data in test.csv gives us information of user behavior that is logged. Here, it includes details what customer searches are and how customer made interaction with the results. For example, is the hotel part of package, are they really do booking on hotel or just click by, and others. Our goal is to predict the **hotel clusters** based on the given data from Expedia and user input later on.
 
 | Feature Name              | Description                                              |
@@ -53,7 +53,7 @@ The data in test.csv gives us information of user behavior that is logged. Here,
 | hotel_cluster             | ID of hotel cluster **prediction**                       |
 
 ### destinations.csv
-This data contains information about the hotel reviews made by users and extracted as a features.<br>
+This data contains information about the hotel reviews made by users and extracted as a features. But, on this project we will not use this information. <br>
 
 | Feature Name              | Description                                              |
 | :---:                     | :---:                                                    |
@@ -98,7 +98,7 @@ Meanwhile, we also can see which information give the most impact to the predict
 
 ### Model Train and Test
 Here we work with two models, which is Random Forest (RF) and Support Vector Regression (SVR).<br>
-Random Forest itself builds upon the idea of bagging which reduces overfiting. This model have two parameters which are, the number of trees and the number of features. The error will depends on correlation between trees and strength of each single tree. This method is also easy to parallelize, that makes it good for use. Here using the rf_evaluation.py for the evaluation we get the result as below.<br>
+Random Forest itself builds upon the idea of bagging which reduces overfiting. This model have two parameters which are, the number of trees and the number of features. The error will depends on correlation between trees and strength of each single tree. This method is also easy to parallelize, that makes it good for use. Here using the rf_evaluation.py for the evaluation we get the result as below. For this model we use 100% of the cleaned data. <br>
 
 |Evaluation        |Value                     |
 |------------------|--------------------------|
@@ -107,7 +107,7 @@ Random Forest itself builds upon the idea of bagging which reduces overfiting. T
 |RMSE              |37.81668005394254         |
 |R<sup>2</sup>     |-0.6820501555223537       |
 
-Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below.<br>
+Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below. For this model we only use 1% of the cleaned data, because for some tries on our machines it took a long time to run the data in bigger percentage. <br>
 
 |Evaluation        |Value                     |
 |------------------|--------------------------|
