@@ -68,15 +68,50 @@ This data contains information about the hotel reviews made by users and extract
 This part will start from entering kaggle Expedia Hotel Recommendations and download the data on [Here](https://www.kaggle.com/c/expedia-hotel-recommendations/data). Then we put it to the folder we want to work with.<br>
 
 ### Data Cleansing
-Here what we wanted to do is to clean the data so that it is more compact and clear. First of all, we wanted to clean the data that have no value in one of the column. For example as the picture below, that did not have the value for orig_destination_distance.<br>
+Here what we wanted to do is to clean the data so that it is more compact and clear. The cleaning here will use clean_data.py on the folder source_code. First we need to import pandas that enables us to work with csv files. <br>
+```Python
+# Import pandas
+import pandas as pd
+```
+First of all, we should do is to read the file and put our file location there. The file meant is train.csv which more or less have the size of 4GB. We also store the csv files to a dataframe. The read function also includes to drop rows which contain `null` in its column. <br>
 ![NoValueOnOrigDestinationDistance](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/orig_destination_distance_value_nan.png)<br>
+```Python
+# read the train file to dataframe and drop rows that have no value.
+df = pd.read_csv ('D:/TIF/TIF SEM.7/Frontier Technology/Hotel Recommendations/first_try/raw_data/train.csv', sep=',').dropna()
+```
 The next thing is that, we would like to focus just on the data where is_booking value is 1. Why? it is because when is_booking value equals to 0, people just seeing through (window shopping) but not booking or doing the transaction.<br>
 ![IsBookingValue](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/is_booking_value_one.png)<br>
+```Python
+# delete all rows with 0 value at is_booking
+df = df[(df.is_booking != 0)]
+```
 Besides, we would also like to cut the column for date_time, srch_ci, and srch_co. As the algorithm we provide cannot work with strings and dates.<br>
 ![DateValue](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/date_value_string.png)<br>
+The code in python is written below.<br>
+```Python
+# delete all columns below as it is presented as string and cannot be used in our algorithm
+df = df.drop('is_booking', axis = 1)
+df = df.drop('date_time', axis = 1)
+df = df.drop('srch_ci', axis = 1)
+df = df.drop('srch_co', axis = 1)
+```
+The last thing we should do is to store the data in a new csv file after doing the cleansing. Remember to change the file location as yours. <br>
+```Python
+# write the cleaned dataframe result to a new file.
+export_csv = df.to_csv ('D:/TIF/TIF SEM.7/Frontier Technology/Hotel Recommendations/first_try/clean_train.csv', index = None, header=True)
+```
 
 ### Orange Evaluation
-Here we would like to see which algorithm or model that works with our data. We will evaluate using the data that have been cleaned and also once randomize it just using the 1% of the data (19855 data) so that Orange can run smooth on my machine. To cut the data for Orange, we can use the minimize_file.py. The result below shows the result of using Orange, that our data works with Random Forest and Support Vector Machine, thus that is going to be implemented.<br>
+Here we would like to see which algorithm or model that works with our data. We will evaluate using the data that have been cleaned and also once randomize it just using the 1% of the data (19855 data) so that Orange can run smooth on my machine. To cut the data for Orange, we can use the minimize_file.py. On the code below, it is stated that we only took 1% (0,01) and the random_state is to initialize the random function. <br>
+```Python
+# .sample = Return a random sample of items from an axis of object.
+# frac = Fraction of axis items to return.
+# random_state = Mersenne Twister pseudo random number generator.
+df = df.sample (frac=0.01, random_state=99)
+# see the shape (rows and columns) of the data (exclude header).
+print(df.shape)
+```
+The result below shows the result of using Orange, that our data works with Random Forest and Support Vector Machine, thus that is going to be implemented.<br>
 ![OrangeVideo](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/visual_documentation/orange_workflow.gif)<br>
 
 The detailed evaluation result of the SVM and RF on RMSE, MSE, MAE, and R<sup>2</sup> according to Orange.<br>
@@ -98,7 +133,39 @@ Meanwhile, we also can see which information give the most impact to the predict
 
 ### Model Train and Test
 Here we work with two models, which is Random Forest (RF) and Support Vector Regression (SVR).<br>
-Random Forest itself builds upon the idea of bagging which reduces overfiting. This model have two parameters which are, the number of trees and the number of features. The error will depends on correlation between trees and strength of each single tree. This method is also easy to parallelize, that makes it good for use. Here using the rf_evaluation.py for the evaluation we get the result as below. For this model we use 100% of the cleaned data. <br>
+Random Forest itself builds upon the idea of bagging which reduces overfiting. This model have two parameters which are, the number of trees and the number of features. The error will depends on correlation between trees and strength of each single tree. This method is also easy to parallelize, that makes it good for use. Here using the rf_evaluation.py and for this model we use 100% of the cleaned data. Before starting the evaluation process, we need to import some things as explained below. <br>
+```Python
+# Import pandas
+import pandas as pd
+# Use numpy to convert to arrays
+import numpy as np
+# Import csv
+import csv
+# To do square root on MSE
+from math import sqrt
+# Using Skicit-learn to split data into training and testing sets
+from sklearn.model_selection import train_test_split
+# Import the model we are using
+from sklearn.ensemble import RandomForestRegressor
+# Import MSE & RMSE
+from sklearn import metrics
+```
+We continue to read the data that we have cleaned and setting labels (target) as hotel_cluster and drop the column there. After dropping it we should also convert the result to a numpy array for further process. The code is shown below. <br>
+```Python
+# Read in data and display first 5 rows
+features = pd.read_csv('D:/TIF/TIF SEM.7/Frontier Technology/Hotel Recommendations/GitHub Documentation/clean_train.csv', sep=',')
+
+# Labels are the values we want to predict
+labels = np.array(features['hotel_cluster'])
+# Remove the labels from the features
+# axis 1 refers to the columns
+features= features.drop('hotel_cluster', axis = 1)
+# Convert to numpy array
+features = np.array(features)
+```
+
+
+For the evaluation we get the result as below. <br>
 
 |Evaluation        |Value                     |
 |------------------|--------------------------|
@@ -107,7 +174,64 @@ Random Forest itself builds upon the idea of bagging which reduces overfiting. T
 |RMSE              |37.81668005394254         |
 |R<sup>2</sup>     |-0.6820501555223537       |
 
-Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below. For this model we only use 1% of the cleaned data, because for some tries on our machines it took a long time to run the data in bigger percentage. <br>
+Support Vector Regression can both be applied to solve problems in classification and regression. It also able to endure with multiple variables. There are many methods (kernel we say) to work with such as Linear, Polynomial, Radial Bias Function, and much more. This model gives out good accuracy and use less memory. On the downside, SVR comes with long training time for large dataset. Here using the svr_evaluation.py for the evaluation we get the result as below. For this model we only use 1% of the cleaned data, because for some tries on our machines it took a long time to run the data in bigger percentage. There are some things that we need to import as mentioned below. <br>
+```Python
+# Import pandas
+import pandas as pd
+# Use numpy to convert to arrays
+import numpy as np
+# Import csv
+import csv
+# To do square root on MSE
+from math import sqrt
+# To enables split (train and test) of the data
+from sklearn.model_selection import train_test_split
+# Import svm
+from sklearn import svm
+# Import scikit-learn metrics module for accuracy calculation
+from sklearn import metrics
+```
+The first thing that we must to do is to read the data, we also would like to select the hotel_cluster as our target result and drop the data. After dropping the data we would like to convert the data to numpy array.<br>
+```Python
+# Labels are the values we want to predict
+labels = np.array(df['hotel_cluster'])
+# Remove the labels from the features
+# axis 1 refers to the columns
+df = df.drop('hotel_cluster', axis=1)
+# Convert to numpy array
+df = np.array(df)
+```
+We continue to split the data to train and test, where the train data would be 75% and test would be 25%. <br>
+```Python
+# Split the data into training and testing sets
+train_df, test_df, train_labels, test_labels = train_test_split(
+    df, labels, test_size=0.25, random_state=50)
+```
+The process continue with creating an svr regression with the Radial Basis Function as the kernel. We proceed with training the data using the training sets that we have split before. The next thing we would like to do is to predict the data on the test set.<br>
+```Python
+# Create a svr regression
+# Radial Basis Function Kernel
+clf = svm.SVR(kernel='rbf', gamma='auto')
+
+# Train the model using the training sets
+clf.fit(train_df, train_labels)
+
+# Predict the response for test dataset
+pred = clf.predict(test_df)
+```
+Last thing we would like to know is its evaluation, with calculating the errors and having MAE, MSE, and RMSE to evaluate the model. <br>
+```Python
+# Calculate the absolute errors
+errors = abs(pred - test_labels)
+
+# Print out the mean absolute error (MAE)
+print('Mean Absolute Error:', round(np.mean(errors), 2))
+# Print out the mean squared error (MSE)
+print('MSE: ', metrics.mean_squared_error(test_labels, pred))
+# Print out the root mean squared error (RMSE)
+print('RMSE: ', np.sqrt(metrics.mean_squared_error(test_labels, pred)))
+```
+For the evaluation we get the result as below. <br>
 
 |Evaluation        |Value                     |
 |------------------|--------------------------|
