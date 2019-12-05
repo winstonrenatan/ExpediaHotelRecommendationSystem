@@ -10,9 +10,10 @@ Informatics 2017, Universitas Pelita Harapan Main Campus
 ## Requirement
 First we need to download and install the development environment as mentioned below:<br>
 [Orange](https://orange.biolab.si/download/#windows)<br>
-Guide on how to install: https://youtu.be/XDdi978Xk7Y <br>
+Guide on how to install Orange: https://youtu.be/XDdi978Xk7Y <br>
 [Python 3.7](https://www.python.org/downloads/)<br>
-Guide on how to download: https://youtu.be/dX2-V2BocqQ <br>
+Guide on how to download and install Python: https://youtu.be/dX2-V2BocqQ <br>
+[Jupyter Notebook](https://jupyter.org/install) <br>
 Besides the Python itself, we also need some package to import such as below:<br>
 [Pandas](https://pandas.pydata.org/)<br>
 [NumPy](https://numpy.org/)<br>
@@ -266,6 +267,8 @@ For the evaluation we get the result as below. <br>
 |MAE               |24.55                     |
 |MSE               |845.3880810817358         |
 |RMSE              |29.307555813878275        |
+
+From both result we can compare that Support Vector Regression has better results as the error is lower than what is given out in the Random Forest result. For example, the MAE of Support Vector Regression 24.55 while Random Forest is larger with the result is 28.2. We can see the plot result on a Jupyter Notebook file [Here](https://github.com/winstonrenatan/ExpediaHotelRecommendationSystem/blob/master/source_code/SVM%20%26%20RF%20Evaluation%20Plot.ipynb).
 
 ### Dash Development
 At the same time with Model Train and Test, we also would like to display our result not just in the terminal so we develop the front-end with Python Dash. This development also uses bootstrap. The thing that we should import are mentioned as below. <br>
